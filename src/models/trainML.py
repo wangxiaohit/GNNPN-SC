@@ -118,7 +118,7 @@ class TrainML:
         self.dataset1 += "/"
         transform = AddServiceMap()
 
-        dataset = CompositionDataset(root="./dataset", pre_transform=transform)
+        dataset = CompositionDataset(root=f"./dataset/{self.dataset1}", pre_transform=transform)
         self.train_loader = DataLoader(dataset[: len(nodefeatures) // 4 * 3], batch_size=2, shuffle=True)
         self.val_loader = DataLoader(dataset[len(nodefeatures) // 4 * 3:], batch_size=2)
         t = time.time()
@@ -141,10 +141,11 @@ class TrainML:
             val_idxList, val_mae = self.test(self.val_loader)
             scheduler.step(val_mae[0])
 
-            test_idxList, test_mae = self.test(self.train_loader)
-            torch.save(self.model, f"solutionML/{self.dataset1}model-{epoch}.pkl")
-            with open(f"solutionML/{self.dataset1}testServices-epoch{epoch}.txt", "w") as f:
-                json.dump(test_idxList + val_idxList, f)
-
             print(f"Epoch: {epoch:03d}, LR: {lr:.5f}, Loss: {loss:.4f}, ValP@1: {val_mae[0]:.4f}, ValP@5: {val_mae[1]:.4f}")
             print(time.time() - t)
+
+            test_idxList, test_mae = self.test(self.train_loader)
+            torch.save(self.model, f"solutions/ML/{self.dataset1}model-{epoch}.pkl")
+            with open(f"solutions/ML/{self.dataset1}testServices-epoch{epoch}.txt", "w") as f:
+                json.dump(test_idxList + val_idxList, f)
+
