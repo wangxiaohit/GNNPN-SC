@@ -209,9 +209,8 @@ class WOA:
                         self.sSetList[i].add(_allAction)
                 newSolution.append(_newSolution)
         elif self.MLWOATest:
-            epoch = 2
             newSolution = []
-            newServiceFeatures, newlabels = loadDataPN(epoch, dataset=self.dataset[:-1], serviceNumber=1)
+            newServiceFeatures, newlabels = loadDataPN(self.epoch, dataset=self.dataset[:-1], serviceNumber=1)
             self.sSetList = [set() for _ in range(len(newServiceFeatures) // 4)]
             idx = 0
             for serviceFeatures in newServiceFeatures[len(newServiceFeatures) // 4 * 3:]:
@@ -241,7 +240,7 @@ class WOA:
 
         # ML+ESWOA test
         if self.MLESWOAtest:
-            newServiceFeatures, _ = loadDataPN(epoch=2, dataset=self.dataset[:-1], serviceNumber=self.serviceNumber)  # normal 2 qws 4
+            newServiceFeatures, _ = loadDataPN(epoch=self.epoch, dataset=self.dataset[:-1], serviceNumber=self.serviceNumber)  # normal 2 qws 4
             serviceFeatures = []
             serviceCategories = []
             for k in range(len(newServiceFeatures)):
@@ -259,9 +258,10 @@ class WOA:
                 serviceCategory = set(serviceCategory)
                 serviceCategories.append(serviceCategory)
                 serviceFeatures.append(serviceFeature)
-            newServiceFeatures = serviceFeatures
-
-        bestSol = []
+            if self.train:
+                newServiceFeatures = serviceFeatures
+            else:
+                newServiceFeatures = serviceFeatures[len(minCostList) // 4 * 3:]
 
         bestFitnesses = [[] for _ in range(self.MAX_Iter)]
         if self.train:
@@ -275,29 +275,12 @@ class WOA:
             t = time.time()
             if not solution:
                 model = ESWOA(newServiceFeature, constraints, popSize=self.popSize, MAX_Iter=self.MAX_Iter)
-                # qws MLESWOAtest: 60 300   ESWOAtest 70 350
-                # normal MLESWOAtest: 100 500    ESWOAtest 100 550
             else:
                 model = ESWOA(newServiceFeature, constraints, solution, popSize=self.popSize, MAX_Iter=self.MAX_Iter)
-                # qws ML2PNWOATest 50 250
-                # normal ML+WOAtest, ML+2PN+WOA: 60 500
             q, sol = model.start()
-            # print(len(sol), sol)
-            # print(len(serviceCategory), serviceCategory)
 
             for i in range(self.MAX_Iter):
                 bestFitnesses[i].append(model.bestFitnesses[i])
-
-            if self.MLESWOAtest:
-                _sol = []
-                index = 0
-                for i in range(self.serCategory):
-                    if i in serviceCategories[idx]:
-                        _sol.append([i] + list(sol[index]))
-                        index += 1
-                    else:
-                        _sol.append([i, 0, 1, 1, 1])
-                bestSol.append(_sol)
 
             tt = time.time() - t
             qualitiesInit["quality"].append(minCost / q)

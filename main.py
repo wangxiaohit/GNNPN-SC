@@ -77,3 +77,19 @@ if __name__ == "__main__":
                         int(paravalue[4]), int(paravalue[5]), float(paravalue[6]), int(paravalue[7]),
                         int(paravalue[8]), int(paravalue[9]))
         model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "ML+ESWOA":
+        parakey = config.options("QWS-ML+ESWOA")
+        paravalue = [config.get("QWS-ML+ESWOA", key) for key in parakey]
+        model = WOA.WOA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
+        model.start()
+
+    if dataset == "Normal" and approach == "ML+ESWOA":
+        parakey = config.options("Normal-ML+ESWOA")
+        paravalue = [config.get("Normal-ML+ESWOA", key) for key in parakey]
+        model = WOA.WOA("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), float(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
+        model.start()
