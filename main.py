@@ -32,3 +32,12 @@ if __name__ == "__main__":
                                  int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
                                  int(paravalue[12]))
         model.start()
+
+    if dataset == "Normal" and approach == "PNLow":
+        parakey = config.options("Normal-PNLow")
+        paravalue = [config.get("Normal-PNLow", key) for key in parakey]
+        model = trainPNLow.PNLow("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                                 int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                                 int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
+                                 int(paravalue[12]))
+        model.start()
