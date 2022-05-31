@@ -2,6 +2,8 @@ import src.models.trainML as trainML
 import src.models.trainPNLow as trainPNLow
 import src.models.trainPNHigh as trainPNHigh
 import src.baselines.WOA as WOA
+import src.baselines.DAAGA as DAAGA
+import src.baselines.SDFGA as SDFGA
 import sys
 import configparser
 
@@ -92,4 +94,60 @@ if __name__ == "__main__":
         model = WOA.WOA("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
                         int(paravalue[4]), int(paravalue[5]), float(paravalue[6]), int(paravalue[7]),
                         int(paravalue[8]), int(paravalue[9]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "ESWOA":
+        parakey = config.options("QWS-ESWOA")
+        paravalue = [config.get("QWS-ESWOA", key) for key in parakey]
+        model = WOA.WOA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
+        model.start()
+
+    if dataset == "Normal" and approach == "ESWOA":
+        parakey = config.options("Normal-ESWOA")
+        paravalue = [config.get("Normal-ESWOA", key) for key in parakey]
+        model = WOA.WOA("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), float(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "ML+DAAGA":
+        parakey = config.options("QWS-ML+DAAGA")
+        paravalue = [config.get("QWS-ML+DAAGA", key) for key in parakey]
+        model = DAAGA.DAAGA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                            int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]))
+        model.start()
+
+    if dataset == "Normal" and approach == "ML+DAAGA":
+        parakey = config.options("Normal-ML+DAAGA")
+        paravalue = [config.get("Normal-ML+DAAGA", key) for key in parakey]
+        model = DAAGA.DAAGA("Normal", int(paravalue[0]), float(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                           int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "DAAGA":
+        parakey = config.options("QWS-DAAGA")
+        paravalue = [config.get("QWS-DAAGA", key) for key in parakey]
+        model = DAAGA.DAAGA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                            int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]))
+        model.start()
+
+    if dataset == "Normal" and approach == "DAAGA":
+        parakey = config.options("Normal-DAAGA")
+        paravalue = [config.get("Normal-DAAGA", key) for key in parakey]
+        model = DAAGA.DAAGA("Normal", int(paravalue[0]), float(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                            int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "SDFGA":
+        parakey = config.options("QWS-SDFGA")
+        paravalue = [config.get("QWS-SDFGA", key) for key in parakey]
+        model = SDFGA.SDFGA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]))
+        model.start()
+
+    if dataset == "Normal" and approach == "SDFGA":
+        parakey = config.options("Normal-SDFGA")
+        paravalue = [config.get("Normal-SDFGA", key) for key in parakey]
+        model = SDFGA.SDFGA("Normal", float(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]))
         model.start()
