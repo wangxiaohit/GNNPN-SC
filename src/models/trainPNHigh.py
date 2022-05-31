@@ -8,9 +8,8 @@ from torch.utils.data import Dataset, DataLoader
 from IPython.display import clear_output
 import matplotlib.pyplot as plt
 
-from modelPN import CombinatorialRL
-from modelPN import reward
-from loadData import loadDataPN
+from src.models.modelPN import reward, CombinatorialRL
+from src.loadData import loadDataPN
 
 
 class SCDataset(Dataset):
@@ -43,18 +42,24 @@ class SCDataset(Dataset):
 
 
 class TrainModel:
-    def __init__(self, model, train_dataset, val_dataset, batch_size=128, threshold=None, max_grad_norm=2., low_model=None):
+    def __init__(self, model, train_dataset, val_dataset, epochDiv, beta, USE_CUDA, dataset, serCategory, lr=0.5e-4,
+                 batch_size=128, threshold=None, max_grad_norm=2., low_model=None):
         self.model = model
         self.low_model = low_model
         self.train_dataset = train_dataset
         self.val_dataset = val_dataset
         self.batch_size = batch_size
         self.threshold = threshold
+        self.epochDiv = epochDiv
+        self.beta = beta
+        self.USE_CUDA = USE_CUDA
+        self.dataset = dataset
+        self.serCategory = serCategory
 
         self.train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
         self.val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-        self.actor_optim = optim.Adam(model.actor.parameters(), lr=0.5e-4)  # all 0.5
+        self.actor_optim = optim.Adam(model.actor.parameters(), lr=lr)
         self.max_grad_norm = max_grad_norm
 
         self.train_tour = []
@@ -64,9 +69,10 @@ class TrainModel:
 
     def train_and_validate(self, n_epochs, epochDiv):
         critic_exp_mvg_avg = torch.zeros(1)
-        if USE_CUDA:
+        if self.USE_CUDA:
             critic_exp_mvg_avg = critic_exp_mvg_avg.cuda()
         latent = None
+        t = time.time()
         for epoch in range(1, n_epochs + 1):
             for batch_id, (sample_batch, labs) in enumerate(self.train_loader):
                 self.low_model.train()
@@ -81,7 +87,7 @@ class TrainModel:
                 if batch_id == 0:
                     critic_exp_mvg_avg = R.mean()
                 else:
-                    critic_exp_mvg_avg = (critic_exp_mvg_avg * beta) + ((1. - beta) * R.mean())
+                    critic_exp_mvg_avg = (critic_exp_mvg_avg * self.beta) + ((1. - self.beta) * R.mean())
 
                 advantage = R - critic_exp_mvg_avg
 
@@ -114,17 +120,17 @@ class TrainModel:
                     "model": self.model.state_dict(),
                     "optimizer": self.actor_optim.state_dict()
                 }
-                torch.save(state, f"./solutionPN/{dataset}highRL/epoch{self.epochs // epochDiv}.model")
+                torch.save(state, f"./solutions/PNHigh/{self.dataset}/epoch{self.epochs // epochDiv}.model")
                 state = {
                     "epoch": epoch,
                     "model": self.low_model.state_dict(),
                     "optimizer": self.actor_optim.state_dict()
                 }
-                torch.save(state, f"./solutionPN/{dataset}highRL/epoch{self.epochs // epochDiv}_low.model")
+                torch.save(state, f"./solutions/PNHigh/{self.dataset}/epoch{self.epochs // epochDiv}_low.model")
 
                 self.model.eval()
                 self.low_model.eval()
-                allActions = [[] for _ in range(serCategory)]
+                allActions = [[] for _ in range(self.serCategory)]
                 for val_batch, labs in self.val_loader:  # numbers
                     inputs = Variable(val_batch)
                     inputs = inputs.cuda()
@@ -134,13 +140,13 @@ class TrainModel:
                     for a in range(len(actions)):
                         allActions[a] += actions[a].cpu().numpy().tolist()
                     self.val_tour.append(R.mean().item())
-                with open(f"./solutionPN/{dataset}highRL/allActions{self.epochs // epochDiv}.txt", "w") as f:
+                with open(f"./solutions/PNHigh/{self.dataset}allActions{self.epochs // epochDiv}.txt", "w") as f:
                     json.dump(allActions, f)
-                print((time.time() - t) / 1000)
+                print((time.time() - t))
                 self.plot(self.epochs, epochDiv)
-                with open(f"./solutionPN/{dataset}highRL/val{self.epochs // epochDiv}.txt", "w") as f:
+                with open(f"./solutions/PNHigh/{self.dataset}/val{self.epochs // epochDiv}.txt", "w") as f:
                     json.dump(self.val_tour, f)
-                with open(f"./solutionPN/{dataset}highRL/time{self.epochs // epochDiv}.txt", "w") as f:
+                with open(f"./solutions/PNHigh/{self.dataset}/time{self.epochs // epochDiv}.txt", "w") as f:
                     json.dump([time.time() - t], f)
             self.epochs += 1
 
@@ -161,97 +167,94 @@ class TrainModel:
                   (epoch // epochDiv, self.val_tour[-1] if len(self.val_tour) else 'collecting'))
         plt.plot(self.val_tour)
         plt.grid()
-        print(f"./solutionPN/{dataset}highRL/epoch{self.epochs // epochDiv}.png")
-        plt.savefig(f"./solutionPN/{dataset}highRL/epoch{self.epochs // epochDiv}.png")
-        plt.show()
+        print(f"./solutions/PNHigh/{self.dataset}/epoch{self.epochs // epochDiv}.png")
+        plt.savefig(f"./solutions/PNHigh/{self.dataset}/epoch{self.epochs // epochDiv}.png")
+        # plt.show()
 
 
-if __name__ == "__main__":
-    trainTag = "train"
-    USE_CUDA = True
-    embeddingTag = False
-    para = True
-    serCategory = 47
-    epochsList = [9, 9, 9, 6, 9, 6, 6, 1]  # 4-10 qws 3 normal 1
-    epoch = 4  # normal 2 qws 4
-    epochDiv = 1
-    for serNumber, epochs in zip(range(2, 5), epochsList[:3]):
-        dataset = "qws1/"
+class PNHigh:
+    def __init__(self, dataset, embeddingTag, USE_CUDA, serCategory, epochDiv, serNumber, hidden_size, n_glimpses,
+                 tanh_exploration, use_tanh, beta, max_grad_norm, lr, epochML, epochPNLow):
+        self.dataset = dataset + "/"
+        self.embeddingTag = embeddingTag
+        self.USE_CUDA = USE_CUDA
+        self.serCategory = serCategory
+        self.epochDiv = epochDiv
+        self.serNumber = serNumber
+        self.hidden_size = hidden_size
+        self.n_glimpses = n_glimpses
+        self.tanh_exploration = tanh_exploration
+        self.use_tanh = use_tanh
+        self.beta = beta
+        self.max_grad_norm = max_grad_norm
+        self.lr = lr
+        self.epochML = epochML
+        self.epochPNLow = epochPNLow
 
-        serviceFeatures, labels = loadDataPN(epoch=epoch, dataset=dataset[:-1], serviceNumber=serNumber)
-        if para:
-            dataset += f"paras/{serNumber}/"
-        if embeddingTag:
-            dataset += "20embeddings/"
+    def start(self):
+
+        serviceFeatures, labels = loadDataPN(epoch=self.epochML, dataset=self.dataset[:-1], serviceNumber=self.serNumber)
+        if self.embeddingTag:
+            self.dataset += "20embeddings/"
             embedding_size = 20
         else:
             embedding_size = 0
         trainDataLen = len(serviceFeatures) // 4 * 3
-        train_dataset = SCDataset(serviceFeatures[:trainDataLen], labels[:trainDataLen], embeddingTag)
-        val_dataset = SCDataset(serviceFeatures[trainDataLen:], labels[trainDataLen:], embeddingTag)
+        train_dataset = SCDataset(serviceFeatures[:trainDataLen], labels[:trainDataLen], self.embeddingTag)
+        val_dataset = SCDataset(serviceFeatures[trainDataLen:], labels[trainDataLen:], self.embeddingTag)
 
-        t = time.time()
-        hidden_size = 256
-        n_glimpses = 0
-        tanh_exploration = 10
-        use_tanh = True
-        serviceNumber = serCategory * serNumber + 0  # 0->4
-
-        beta = 0.9
-        max_grad_norm = 2.
+        serviceNumber = self.serCategory * self.serNumber
 
         model_low = CombinatorialRL(
             embedding_size,
-            hidden_size,
+            self.hidden_size,
             serviceNumber,
-            n_glimpses,
-            tanh_exploration,
-            use_tanh,
+            self.n_glimpses,
+            self.tanh_exploration,
+            self.use_tanh,
             reward,
             attention="Dot",
-            use_cuda=USE_CUDA,
-            sNumber=serNumber,
-            sCategory=serCategory)
+            level="Low",
+            use_cuda=self.USE_CUDA,
+            sNumber=self.serNumber,
+            sCategory=self.serCategory
+        )
 
         model_high = CombinatorialRL(
             embedding_size,
-            hidden_size,
+            self.hidden_size,
             serviceNumber,
-            n_glimpses,
-            tanh_exploration,
-            use_tanh,
+            self.n_glimpses,
+            self.tanh_exploration,
+            self.use_tanh,
             reward,
             attention="Dot",
-            use_cuda=USE_CUDA,
             level="High",
-            sNumber=serNumber,
-            sCategory=serCategory
+            use_cuda=self.USE_CUDA,
+            sNumber=self.serNumber,
+            sCategory=self.serCategory
         )
-
-        if trainTag == "train":
-            load_root = f"./solutionPN/{dataset}low/epoch{epochs}.model"
-            # load_root = f"./solutionPN/{dataset}low/lowPN.model"
-            state = torch.load(load_root)
-            model_low.load_state_dict(state['model'])
-
+        if self.epochPNLow >= 0:
+            load_root = f"./solutions/PNLow/{self.dataset}/epoch{self.epochPNLow}.model"
         else:
-            # dataset = f"dataset1/paras/{serNumber}/"
+            load_root = f"./solutions/pretrained/{self.dataset[:-1]}-PNLow.model"
+        state = torch.load(load_root)
+        model_low.load_state_dict(state['model'])
 
-            load_root = f"./solutionPN/{dataset}highRL/epoch299_low.model"
-            state = torch.load(load_root)
-            model_low.load_state_dict(state['model'])
+        # load_root = f"./solutionPN/{dataset}highRL/epoch299_low.model"
+        # state = torch.load(load_root)
+        # model_low.load_state_dict(state['model'])
+        #
+        # load_root = f"./solutionPN/{dataset}highRL/epoch299.model"
+        # state = torch.load(load_root)
+        # model_high.load_state_dict(state['model'])
+        # # dataset = f"dataset1/paras/{serNumber}/"
 
-            load_root = f"./solutionPN/{dataset}highRL/epoch299.model"
-            state = torch.load(load_root)
-            model_high.load_state_dict(state['model'])
-            # dataset = f"dataset1/paras/{serNumber}/"
-
-        if USE_CUDA:
+        if self.USE_CUDA:
             model_low = model_low.cuda()
             model_high = model_high.cuda()
-        model_high = TrainModel(model_high,
-                                train_dataset,
-                                val_dataset,
+        model_high = TrainModel(model_high, train_dataset, val_dataset, self.epochDiv, self.beta, self.USE_CUDA,
+                                self.dataset, self.serCategory, self.lr, 128, None, self.max_grad_norm,
                                 low_model=model_low)
 
-        model_high.train_and_validate(100, epochDiv)
+        model_high.train_and_validate(100, self.epochDiv)

@@ -58,7 +58,7 @@ def reward(sample_solution, optSolutions, sCategory, USE_CUDA=False, level="Low"
         if level == "Low":
             optList[j] = violate
         else:
-            optList[j] = violate + objFunc
+            optList[j] = round(violate + objFunc, 5)
     sumVio = 0
     avg = np.average(optList)
     for i in optList:

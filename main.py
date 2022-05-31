@@ -1,5 +1,6 @@
 import src.models.trainML as trainML
 import src.models.trainPNLow as trainPNLow
+import src.models.trainPNHigh as trainPNHigh
 import sys
 import configparser
 
@@ -40,4 +41,22 @@ if __name__ == "__main__":
                                  int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
                                  int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
                                  int(paravalue[12]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "PNHigh":
+        parakey = config.options("QWS-PNHigh")
+        paravalue = [config.get("QWS-PNHigh", key) for key in parakey]
+        model = trainPNHigh.PNHigh("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                                   int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                                   int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
+                                   int(paravalue[12]), int(paravalue[12]))
+        model.start()
+
+    if dataset == "Normal" and approach == "PNHigh":
+        parakey = config.options("Normal-PNHigh")
+        paravalue = [config.get("Normal-PNHigh", key) for key in parakey]
+        model = trainPNHigh.PNHigh("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                                   int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                                   int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
+                                   int(paravalue[12]), int(paravalue[12]))
         model.start()

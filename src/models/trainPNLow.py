@@ -163,7 +163,7 @@ class TrainModel:
         plt.plot(self.val_tour)
         plt.grid()
         plt.savefig(f"./solutions/PNLow/{self.dataset}/epoch{self.epochs // self.epochDiv}.png")
-        plt.show()
+        # plt.show()
 
 
 class PNLow:
@@ -186,7 +186,7 @@ class PNLow:
 
     def start(self):
         newServiceFeatures, newlabels = loadDataPN(epoch=self.epochML, dataset=self.dataset[:-1],
-                                                   serviceNumber=self.serNumber)  # qws 4 normal 2
+                                                   serviceNumber=self.serNumber)
         if self.embeddingTag:
             self.dataset += "20embeddings/"
         trainDataLen = len(newServiceFeatures) // 4 * 3
