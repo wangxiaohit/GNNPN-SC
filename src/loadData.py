@@ -80,11 +80,11 @@ def loadDataPN(epoch=7, dataset="", serviceNumber=5):
     with open(f"./data/{dataset}minCostList.data", "r") as f:
         minCostList = json.load(f)
 
-    if dataset != "normal/":
-        with open(f"./solutionML/{dataset}testServices-run0-epoch{epoch}.txt", "r") as f:
+    if epoch >= 0:
+        with open(f"./solutions/ML/{dataset}testServices-run0-epoch{epoch}.txt", "r") as f:
             testServices = json.load(f)
     else:
-        with open(f"./solutionML/{dataset}testServices.txt", "r") as f:
+        with open(f"./solutions/pretrained/{dataset[:-1]}-ML.txt", "r") as f:
             testServices = json.load(f)
 
     serCategory = len(serviceFeature.keys())

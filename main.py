@@ -1,5 +1,5 @@
-import src.loadData as loadData
 import src.models.trainML as trainML
+import src.models.trainPNLow as trainPNLow
 import sys
 import configparser
 
@@ -22,4 +22,13 @@ if __name__ == "__main__":
         paravalue = [config.get("Normal-ML", key) for key in parakey]
         model = trainML.TrainML("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
                                 float(paravalue[4]), float(paravalue[5]), int(paravalue[6]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "PNLow":
+        parakey = config.options("QWS-PNLow")
+        paravalue = [config.get("QWS-PNLow", key) for key in parakey]
+        model = trainPNLow.PNLow("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                                 int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                                 int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
+                                 int(paravalue[12]))
         model.start()
