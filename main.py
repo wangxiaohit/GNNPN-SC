@@ -1,6 +1,7 @@
 import src.models.trainML as trainML
 import src.models.trainPNLow as trainPNLow
 import src.models.trainPNHigh as trainPNHigh
+import src.baselines.WOA as WOA
 import sys
 import configparser
 
@@ -59,4 +60,20 @@ if __name__ == "__main__":
                                    int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
                                    int(paravalue[8]), float(paravalue[9]), float(paravalue[10]), float(paravalue[11]),
                                    int(paravalue[12]), int(paravalue[12]))
+        model.start()
+
+    if (dataset == "QWS" or dataset == "qws") and approach == "WOA":
+        parakey = config.options("QWS-WOA")
+        paravalue = [config.get("QWS-WOA", key) for key in parakey]
+        model = WOA.WOA("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), int(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
+        model.start()
+
+    if dataset == "Normal" and approach == "WOA":
+        parakey = config.options("Normal-WOA")
+        paravalue = [config.get("Normal-WOA", key) for key in parakey]
+        model = WOA.WOA("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                        int(paravalue[4]), int(paravalue[5]), float(paravalue[6]), int(paravalue[7]),
+                        int(paravalue[8]), int(paravalue[9]))
         model.start()

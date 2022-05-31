@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from tqdm import tqdm
 
 
 def compute_inv_propesity(labels, A, B):
@@ -205,16 +206,13 @@ def addS(PriS, serviceFeatures, constraints, serviceIndex, ser2idxdiv, ser2idxmo
                     min2[serIdx - 1].append(serCost)
                     min3[serIdx - 1].append(serQuality)
                     PriSNew[ser2idxdiv[s]].append(tuple([ser0, ser1, serCost, serQuality]))
-                # if len(PriSNew[ser2idxdiv[s]]) > 100:
-                #     break
             else:
                 PriSNew[ser2idxdiv[s]].append(tuple([ser0, ser1, serCost, serQuality]))
     _PriSNew = [PriSNew[s] for s in serviceIndex]
-    # print(_PriSNew[0])
     return _PriSNew
 
 
-def loadDataOther(dataset="", reduct=False, sSetList=None):
+def loadDataOther(dataset="", reduct=False, sSetList=None, train=False):
 
     if dataset != "":
         dataset = dataset + "/"
@@ -238,9 +236,15 @@ def loadDataOther(dataset="", reduct=False, sSetList=None):
     newServiceFeatures = []
     newlabels = []
     constraintsList = []
-    _idx = 0
+    if not train:
+        left = len(nodefeatures) // 4 * 3
+        _idx = len(nodefeatures) // 4 * 3
+    else:
+        left = 0
+        _idx = 0
 
-    for nodefeature, label in zip(nodefeatures, labels):
+    print("Loading data...")
+    for nodefeature, label in tqdm(zip(nodefeatures[left:], labels[left:])):
         constraints = dict()
         serviceSet = set()
         for i in range(1, serCategory + 1):
@@ -263,10 +267,8 @@ def loadDataOther(dataset="", reduct=False, sSetList=None):
         serviceIndex = serviceIndex[1:]
         if sSetList and _idx >= len(nodefeatures) // 4 * 3:
             newServiceFeature = addS(list(range(len(ser2idxdiv))), serviceFeature, constraints, serviceIndex, ser2idxdiv, ser2idxmod, reduct, sSetList[_idx - len(nodefeatures) // 4 * 3])
-            print(_idx, [len(newServiceFeature[temp]) for temp in range(len(newServiceFeature))])
         else:
             newServiceFeature = addS(list(range(len(ser2idxdiv))), serviceFeature, constraints, serviceIndex, ser2idxdiv, ser2idxmod, reduct)
-            print(_idx, [len(newServiceFeature[temp]) for temp in range(len(newServiceFeature))])
         _newServiceFeature = []
         for feature in newServiceFeature:
             if len(feature) > 0:
