@@ -5,6 +5,7 @@ import src.baselines.WOA as WOA
 import src.baselines.DAAGA as DAAGA
 import src.baselines.SDFGA as SDFGA
 import src.baselines.DPKSD.DPKSD as DPKSD
+import src.baselines.PDDQN.start as PDDQN
 import sys
 import configparser
 
@@ -163,6 +164,20 @@ if __name__ == "__main__":
         parakey = config.options("Normal-DPKSD")
         paravalue = [config.get("Normal-DPKSD", key) for key in parakey]
         model = DPKSD.DPKSD("Normal", float(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]))
+        model.start()
+
+    elif (dataset == "QWS" or dataset == "qws") and approach == "ML+PDDQN":
+        parakey = config.options("QWS-ML+PDDQN")
+        paravalue = [config.get("QWS-ML+PDDQN", key) for key in parakey]
+        model = PDDQN.PDDQN("QWS", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                            int(paravalue[4]))
+        model.start()
+
+    elif dataset == "Normal" and approach == "ML+PDDQN":
+        parakey = config.options("Normal-ML+PDDQN")
+        paravalue = [config.get("Normal-ML+PDDQN", key) for key in parakey]
+        model = PDDQN.PDDQN("Normal", int(paravalue[0]), int(paravalue[1]), int(paravalue[2]), int(paravalue[3]),
+                            int(paravalue[4]))
         model.start()
 
     else:
