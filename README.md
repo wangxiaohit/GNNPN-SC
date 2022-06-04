@@ -3,13 +3,13 @@ The opensource for a graph neural network and pointer network-based approach for
 
 ## Datasets
 Download data from: 
-[URL](https://drive.google.com/file/d/1zGJ6r8ptiMjFtf29ejPqQDcnuldO2kTP/view?usp=sharing).
+[URL](https://bit.ly/3zxOSD9).
 
 Extract the zipped file into ```<work_dir>/data``` after downloaded.
 
 ##Pre-trained models
 Download pre-trained models from:
-[URL](https://drive.google.com/file/d/1P3vYUJEu_gpweT3YWWrOU3nyLDdWBmol/view?usp=sharing).
+[URL](https://bit.ly/3NlamqC).
 
 Extract the zipped file into ```<work_dir>/solutions/pretrained``` after downloaded.
 
