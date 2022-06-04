@@ -7,13 +7,13 @@ Download data from:
 
 Extract the zipped file into ```<work_dir>/data``` after downloaded.
 
-##Pre-trained models
+## Pre-trained models
 Download pre-trained models from:
 [URL](https://bit.ly/3NlamqC).
 
 Extract the zipped file into ```<work_dir>/solutions/pretrained``` after downloaded.
 
-##Example use cases
+## Example use cases
 The framework is divided into three parts.
 ### Candidate Service Reduction
 ```angular2html
@@ -79,7 +79,7 @@ python main.py Normal WOA -1
 ```
 The results are stored in ```<work_dir>/solutions/WOA/<dataset>/ML+2PN+WOA.txt```.
 
-##Other baselines
+## Other baselines
 ```
 python main.py [dataset] [Baseline] (MLEpoch)
 
