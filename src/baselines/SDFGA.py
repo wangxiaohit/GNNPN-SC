@@ -386,7 +386,6 @@ class SDFGA:
                                                                           constraintsList, minCostList[_min:]):
             constraints = dict()
             serviceSet = set()
-            # constraints2calcOptTarget = [[], []]  # 计算最佳值
             for i in range(1, self.serCategory + 1):
                 constraints[i] = [0] * 8
 

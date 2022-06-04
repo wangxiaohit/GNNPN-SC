@@ -39,7 +39,6 @@ class TrainML:
             data = data.to(self.device)
             self.optimizer.zero_grad()
             x = self.model(data).squeeze()
-            # loss = criterion(x, data.y.view(x.size(0)))
             loss = self.criterion(x, data.y.view(x.size(0), x.size(1)))
             loss.backward()
             total_loss += loss.item() * data.num_graphs

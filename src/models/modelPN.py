@@ -32,7 +32,7 @@ def calc(services, constraints, sCategory):
     return violate, objFunc, violateConstraints
 
 
-def reward(sample_solution, optSolutions, sCategory, USE_CUDA=False, level="Low", embedding_size=20):  # numbers
+def reward(sample_solution, optSolutions, sCategory, USE_CUDA=False, level="Low", embedding_size=20):
     """
     Args:
         sample_solution seq_len of [batch_size]
@@ -150,7 +150,6 @@ class PointerNet(nn.Module):
 
         self.alpha = torch.ones(1).cuda()
         self.mask = mask
-        # self.alpha = nn.Parameter(alpha)
         if embedding_size != 0:
             self.embedding1 = nn.Embedding(self.serCategory, embedding_size)
         self.embedding2 = nn.Linear(embedding_size + qosandcons, hidden_size)
@@ -180,7 +179,6 @@ class PointerNet(nn.Module):
         """
         batch_size = inputs.size(0)
         seq_len = inputs.size(1)
-        # print(seq_len, self.seq_len)
         assert seq_len == self.seq_len
         if self.embedding_size != 0:
             x1 = inputs[:, :, 0].long()
@@ -222,9 +220,7 @@ class PointerNet(nn.Module):
             for p in range(len(logits_new)):
                 logits_new[p][: k * self.serNumber] = -np.inf
                 logits_new[p][(k + 1) * self.serNumber:] = -np.inf
-            # print(len(logits_new[0]))
-            # print(logits_new)
-            # print(F.softmax(logits_new, dim=1))
+
             probs = F.softmax(logits_new, dim=1)
             if sample == "greedy":
                 _, idxs = torch.max(probs, dim=1)

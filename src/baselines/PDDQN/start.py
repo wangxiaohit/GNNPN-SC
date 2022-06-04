@@ -13,12 +13,9 @@ class SC:
         self.observation_space = 8
         self.serviceCategory = serviceCategory
         self.serviceNumber = serviceNumber
-        # time.sleep(100)
         self.constraints = constraints
         self.qosNum = 4
         self.consNum = 2
-        # self.observation_space = len(initialStates[0])
-        # self.initialStates = initialStates
 
     def reset(self):
         return [0, 1, 1, 1, 0, 0, 0, 0]
@@ -70,8 +67,6 @@ def mini_batch_train(env, agent, max_episodes, max_steps, batch_size, serviceCat
 
             if number == serviceCategory:
                 episode_rewards.append(episode_reward)
-                # print("Episode " + str(episode) + ": " + str(episode_reward))
-                # print("Episode " + str(episode) + ": " + str(best))
                 if 1 - reward < best:
                     best = 1 - reward
                 break

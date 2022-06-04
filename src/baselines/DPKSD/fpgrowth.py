@@ -30,7 +30,7 @@ def updateFPtree(items, inTree, headerTable, count):
             headerTable[items[0]][1] = inTree.children[items[0]]
         else:
             updateHeader(headerTable[items[0]][1], inTree.children[items[0]])
-    # 递归
+
     if len(items) > 1:
         updateFPtree(items[1::], inTree.children[items[0]], headerTable, count)
 

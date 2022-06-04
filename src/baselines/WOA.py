@@ -11,8 +11,6 @@ class ESWOA:
         self.bestFitnesses = []
 
         if solution is not None:
-            # self._global = False
-            # self.pe = 0.0
             for i in range(len(services)):
                 for j in range(len(services[i])):
                     services[i][j] = list(services[i][j])
@@ -148,7 +146,7 @@ class ESWOA:
                     pop_ = [round(idx2 * math.exp(l) * math.cos(2 * math.pi * l) + idx1) for idx1, idx2 in
                             zip(self.bestPops, D_)]
                 if pop_ is not None:
-                    for j in range(len(pop_)):  # overflow
+                    for j in range(len(pop_)):
                         if abs(pop_[j]) >= len(self.services[j]):
                             pop_[j] %= len(self.services[j])
                     self.pops[i] = pop_
@@ -174,7 +172,7 @@ class WOA:
         self.MLWOATest = MLWOATest
         self.ESWOAtest = ESWOAtest
         self.serviceNumber = serviceNumber
-        self.reduct = reduct  # Only for Normal (ML+WOA ML+2PN+WOA ESWOA DAAGA 0.55)
+        self.reduct = reduct
         self.epoch = epoch
         self.MAX_Iter = MAX_Iter
         self.popSize = popSize

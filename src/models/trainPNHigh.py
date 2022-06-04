@@ -131,7 +131,7 @@ class TrainModel:
                 self.model.eval()
                 self.low_model.eval()
                 allActions = [[] for _ in range(self.serCategory)]
-                for val_batch, labs in self.val_loader:  # numbers
+                for val_batch, labs in self.val_loader:
                     inputs = Variable(val_batch)
                     inputs = inputs.cuda()
 
@@ -240,15 +240,6 @@ class PNHigh:
             load_root = f"./solutions/pretrained/{self.dataset[:-1]}-PNLow.model"
         state = torch.load(load_root)
         model_low.load_state_dict(state['model'])
-
-        # load_root = f"./solutionPN/{dataset}highRL/epoch299_low.model"
-        # state = torch.load(load_root)
-        # model_low.load_state_dict(state['model'])
-        #
-        # load_root = f"./solutionPN/{dataset}highRL/epoch299.model"
-        # state = torch.load(load_root)
-        # model_high.load_state_dict(state['model'])
-        # # dataset = f"dataset1/paras/{serNumber}/"
 
         if self.USE_CUDA:
             model_low = model_low.cuda()

@@ -123,7 +123,6 @@ class Model:
         for nk in range(self.NKmax):
             deltaen_1 = 1
             for ng in range(self.NGmin):
-                # print(self.bestObjFunc)
                 if nk <= na:
                     fitness = []
                     for pop in self.popServices:
@@ -226,7 +225,6 @@ class Model:
                             self.bestSolution = pop
                             self.bestObjFunc = violate + objFunc
                         fitness.append(violate + objFunc)
-                    # print(self.bestObjFunc)
                     _fitness = 3 - np.array(fitness)
                     cqAll = np.sum(_fitness)
                     deltaTau = 1 / cqAll

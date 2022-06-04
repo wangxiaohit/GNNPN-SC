@@ -41,7 +41,6 @@ def dist_projection(optimal_dist, rewards, dones, gamma, n_atoms, Vmin, Vmax, su
             m[sample_idx][l] = m[sample_idx][l] + optimal_dist[sample_idx][atom] * (u - b_j)
             m[sample_idx][u] = m[sample_idx][u] + optimal_dist[sample_idx][atom] * (b_j - l)
 
-    # print(m)
     return m
 
 

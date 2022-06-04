@@ -13,7 +13,7 @@ class NodeEncoder(torch.nn.Module):
         self.embeddings = torch.nn.ModuleList()
 
         for i in range(9):
-            self.embeddings.append(Embedding(100, hiddenChannels))  # 100->500
+            self.embeddings.append(Embedding(100, hiddenChannels))
 
     def reset_parameters(self):
         for embedding in self.embeddings:
@@ -36,7 +36,7 @@ class EdgeEncoder(torch.nn.Module):
         self.embeddings = torch.nn.ModuleList()
 
         for i in range(9):
-            self.embeddings.append(Embedding(100, hiddenChannels))  # 100->500
+            self.embeddings.append(Embedding(100, hiddenChannels))
 
     def reset_parameters(self):
         for embedding in self.embeddings:
@@ -62,8 +62,8 @@ class Net(torch.nn.Module):
         self.dropout = dropout
         self.outChannels = outChannels
         self.reqAndServiceChannels = embeddingChannels
-        self.qosNumber = 4  # 2->4
-        self.constraintNumber = 2  # 2->4
+        self.qosNumber = 4
+        self.constraintNumber = 2
         self.isService = isServices
 
         self.nodeEncoder = NodeEncoder(self.reqAndServiceChannels)
@@ -92,7 +92,6 @@ class Net(torch.nn.Module):
             self.nodeBatchNorms.append(BatchNorm1d(hiddenChannels))
         self.nodeLin = Linear(hiddenChannels, hiddenChannels)
 
-        # self.serviceEdgeEncoders = ModuleList()
         self.serviceConvs = ModuleList()
         self.serviceBatchNorms = ModuleList()
         first = True

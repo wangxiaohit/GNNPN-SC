@@ -214,11 +214,6 @@ class PNLow:
             sCategory=self.serCategory
         )
 
-        # load_root = f"./solutionPN/{dataset}low/epoch{1}.model"
-        # # load_root = f"./solutionPN/low/lowPN.model"
-        # state = torch.load(load_root)
-        # SC_360_model.load_state_dict(state['model'])
-
         if self.USE_CUDA:
             SC_360_model = SC_360_model.cuda()
 

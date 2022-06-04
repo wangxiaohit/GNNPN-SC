@@ -77,8 +77,6 @@ class GA:
                 mother = pop[np.random.randint(self.popSize)]
                 cross_points = np.random.randint(0, len(self.services))
                 child[cross_points:] = mother[cross_points:].copy()
-            # if self.calc(child)[2] > self.calc(father)[2]:
-            #     newChild
             newChild = self.mutation(child)
             newPop.append(newChild)
         return newPop
@@ -134,8 +132,6 @@ def addS(PriS, serviceFeatures, constraints, serviceIndex, ser2idxdiv, ser2idxmo
         serCost = serviceFeatures[serIdx][ser2idxmod[s]][-2]
         serQuality = serviceFeatures[serIdx][ser2idxmod[s]][-1]
         serIdx = int(serIdx)
-        # if ser1 < 0.5:    # normal 0.52  DAAGA 0.5
-        #     continue
 
         if constraints[serIdx][0] <= serCost <= constraints[serIdx][1] and constraints[serIdx][2] <= serQuality <= \
                 constraints[serIdx][3]:
@@ -168,12 +164,9 @@ def addS(PriS, serviceFeatures, constraints, serviceIndex, ser2idxdiv, ser2idxmo
                     min2[serIdx - 1].append(serCost)
                     min3[serIdx - 1].append(serQuality)
                     PriSNew[ser2idxdiv[s]].append(tuple([ser0, ser1, serCost, serQuality]))
-                # if len(PriSNew[ser2idxdiv[s]]) > 100:
-                #     break
             else:
                 PriSNew[ser2idxdiv[s]].append(tuple([ser0, ser1, serCost, serQuality]))
     _PriSNew = [PriSNew[s] for s in serviceIndex]
-    # print(_PriSNew[0])
     return _PriSNew
 
 
@@ -187,11 +180,6 @@ class DPKSD:
 
     def start(self):
         servicepattern = mine.mine(self.dataset, self.mineFreq)
-        # with open(f"D:/data/{dataset}/servicePattern.data", "r") as f:
-        #     servicepattern = f.readlines()
-        # for i in range(len(servicepattern)):
-        #     servicepattern[i] = ast.literal_eval(servicepattern[i])
-        # servicepattern = sorted(servicepattern, key=lambda x: len(x), reverse=True)
 
         with open(f"./data/{self.dataset}nodefeatures.data", "r") as f:
             nodefeatures = json.load(f)
@@ -284,7 +272,6 @@ class DPKSD:
                 else:
                     _newServiceFeature.append(sp)
             newServiceFeatures.append(_newServiceFeature)
-            # print([len(x) for x in _newServiceFeature])
 
             constraint = [[] for _ in range(2)]
             for key, value in constraints.items():

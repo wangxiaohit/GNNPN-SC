@@ -82,7 +82,7 @@ def loadDataPN(epoch=7, dataset="", serviceNumber=5):
         minCostList = json.load(f)
 
     if epoch >= 0:
-        with open(f"./solutions/ML/{dataset}testServices-run0-epoch{epoch}.txt", "r") as f:
+        with open(f"./solutions/ML/{dataset}testServices-epoch{epoch}.txt", "r") as f:
             testServices = json.load(f)
     else:
         with open(f"./solutions/pretrained/{dataset[:-1]}-ML.txt", "r") as f:
@@ -101,7 +101,6 @@ def loadDataPN(epoch=7, dataset="", serviceNumber=5):
     for nodefeature, label, testService, minCost in zip(nodefeatures, labels, testServices, minCostList):
         constraints = dict()
         serviceSet = set()
-        # constraints2calcOptTarget = [[], []]  # 计算最佳值
         for i in range(1, serCategory + 1):
             constraints[i] = [0] * 8
 
@@ -114,7 +113,6 @@ def loadDataPN(epoch=7, dataset="", serviceNumber=5):
                 constraints[idx][-8: -4] = node[-5: -3] + node[-2:]
                 serviceSet.add(idx)
 
-        # 读前X服务
         serviceFiveSets = [set() for _ in range(serCategory)]
         for s in testService[: len(testService)]:
             if len(serviceFiveSets[ser2idxdiv[s]]) < serviceNumber:
@@ -148,12 +146,6 @@ def loadDataPN(epoch=7, dataset="", serviceNumber=5):
 
             else:
                 newServiceFeature += [[i, 0, 1, 1, 1] + x for _ in range(serviceNumber)]
-        # print(ser1)
-        # print(ser2)
-        # optimal = Search(ser1, ser2, 0)
-        # nowbest, sindex, se0, se1 = optimal.start()
-        # print(nowbest)
-        # print(minCost)
         newServiceFeatures.append(newServiceFeature)
         newlabels.append(minCost)
 
@@ -172,8 +164,6 @@ def addS(PriS, serviceFeatures, constraints, serviceIndex, ser2idxdiv, ser2idxmo
         serCost = serviceFeatures[serIdx][ser2idxmod[s]][-2]
         serQuality = serviceFeatures[serIdx][ser2idxmod[s]][-1]
         serIdx = int(serIdx)
-        # if ser1 < 0.5:    # normal 0.52  DAAGA 0.5
-        #     continue
 
         if constraints[serIdx][0] <= serCost <= constraints[serIdx][1] and constraints[serIdx][2] <= serQuality <= \
                 constraints[serIdx][3]:
